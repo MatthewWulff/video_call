@@ -46,20 +46,18 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
+const User = mongoose.model("User", userSchema)
 
-const User = mongoose.model("User",userSchema)
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next()
+  try {
+    const salt = await bcryptjs.genSalt(10)
+    this.password = await bcrypt.hash(this.password, salt)
 
-userSchema.pre("save", async function(next){
-    try{
-        const salt  = await bcryptjs.genSalt(10)
-        this.password = await bcrypt.hash(this.password,salt)
-
-
-        next()
-    }catch(error){
-        next(error)
-
-    }
+    next()
+  } catch (error) {
+    next(error)
+  }
 })
- 
+
 export default User
