@@ -25,7 +25,7 @@ export async function signUp(req, res) {
     const idx = Math.floor(Math.random() * 100) + 1
     const randomAvatar = `https://avatar-placeholder.iran.liara.run/public/${idx}.png`
 
-    const newUser = new User.create({
+    const newUser = await User.create({
         email,
         fullName,
         password,
@@ -42,7 +42,10 @@ export async function signUp(req, res) {
         secure: process.env.NODE_ENV === "production"
     } )
     res.status(201).json({success: true, user: newUser})
-  } catch (error) {}
+  } catch (error) {
+    console.log("Error in signup", error)
+    res.status(500).json({message:"Internal Server Error"})
+  }
 }
 export async function login(req, res) {
   res.send("Login Route")
